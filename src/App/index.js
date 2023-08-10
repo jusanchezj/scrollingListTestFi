@@ -1,103 +1,52 @@
-import React from 'react';
-import { TodoCounter } from '../TodoCounter';
-import { TodoSearch } from '../TodoSearch';
-import { TodoList } from '../TodoList';
-import { CreateTodoButton } from '../CreateTodoButton';
-import { TodoItem } from '../TodoItem';
-import { TodosLoading } from '../TodosLoading';
-import { TodosError } from '../TodosError';
-import { TodosEmpty } from '../TodosEmpty';
-import TodoForm from '../TodoForm';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-function useLocalStorage(itemName, initialValue) {
-  const [item, setItem] = React.useState(initialValue);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState(false);
-
-  React.useEffect(() => {
-    setTimeout(() => {
-      try {
-        const localStorageItem = localStorage.getItem(itemName);
-        let parsedTodos;
-  
-        if (!localStorageItem) {
-          localStorage.setItem(itemName, JSON.stringify(initialValue));
-          parsedTodos = initialValue;
-        } else {
-          parsedTodos = JSON.parse(localStorageItem);
-        }
-  
-        setItem(parsedTodos);
-        setLoading(false);
-      } catch (error) {
-        setError(true);
-        setLoading(false);
-      }
-    },2000 );
-  }, [itemName, initialValue]); // Agregamos las dependencias aquí (aqui solo se ejecuta el efecto una vez)
-
-  const saveItem = (newItem) => {
-    localStorage.setItem(itemName, JSON.stringify(newItem));
-    setItem(newItem);
-  };
-
-  return [item, saveItem, loading, error];
-}
 
 function App() {
-  const [todos, saveTodos, loading, error] = useLocalStorage('TODOS_V1', []);
-  const [searchValue, setSearchValue] = React.useState('');
-  const [showForm, setShowForm] = React.useState(false);
-  const completedTodos = todos.filter((todo) => todo.completed).length;
-  const totalTodos = todos.length;
+  const [countries, setCountries] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const limit = 20;
 
-  const filteredTodos = todos.filter((todo) =>
-    todo.text.toLowerCase().includes(searchValue.toLowerCase())
-  );
+  const fetchCountries = async () => {
+    setIsLoading(true);
 
-  const completeTodo = (text) => {
-    const todoIndex = todos.findIndex((todo) => todo.text === text);
-    const newTodos = [...todos];
-    newTodos[todoIndex].completed = !newTodos[todoIndex].completed;
-    saveTodos(newTodos);
+    try {
+      const response = await axios.get(`https://restcountries.com/v3.1/all?_page=${page}&_limit=${limit}`);
+      setCountries(prevCountries => [...prevCountries, ...response.data]);
+      setPage(prevPage => prevPage + 1);
+    } catch (error) {
+      console.error('Error fetching countries:', error);
+    }
+
+    setIsLoading(false);
   };
 
-  const deleteTodo = (text) => {
-    const newTodos = todos.filter((todo) => todo.text !== text);
-    saveTodos(newTodos);
-  };
+  useEffect(() => {
+    fetchCountries();
+  }, []);
 
-  const addTodo = (todo) => {
-    saveTodos([...todos, todo]);
-    setShowForm(false);
+  const handleScroll = (e) => {
+    const { scrollTop, clientHeight, scrollHeight } = e.target;
+    if (scrollHeight - scrollTop - clientHeight < clientHeight * 0.1) {
+      fetchCountries();
+    }
   };
 
   return (
-    <React.Fragment>
-      <TodoCounter completed={completedTodos} total={totalTodos} />
-      <TodoSearch searchValue={searchValue} setSearchValue={setSearchValue} />
-
-      <TodoList>
-        {loading && <><TodosLoading/> <TodosLoading/> <TodosLoading/></>}
-        {error && <TodosError/>}
-        {(!loading && filteredTodos.length <= 0) && <TodosEmpty/>}
-        {filteredTodos.map((todo) => (
-          <TodoItem
-            key={todo.text}
-            text={todo.text}
-            completed={todo.completed}
-            onComplete={() => completeTodo(todo.text)}
-            onDelete={() => deleteTodo(todo.text)}
-          />
+    <div className="App">
+      <header className="App-header">
+        <h1>Infinite Scrolling Country List</h1>
+      </header>
+      <div className="country-list" onScroll={handleScroll}>
+        {countries.map((country, index) => (
+          <div key={index} className="country-item">
+            {country.name.common}
+          </div>
         ))}
-      </TodoList>
-
-      {showForm && <TodoForm onAddTodo={addTodo} onCloseForm={() => setShowForm(false)} />}
-
-      <CreateTodoButton onClick={() => setShowForm(true)} />
-
-
-    </React.Fragment>
+        {isLoading && <div className="loader">Loading...</div>}
+      </div>
+    </div>
   );
 }
 

@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/TODO-LIST.git/build/static/css/main.a09c9d7f.css",
-    "main.js": "/TODO-LIST.git/build/static/js/main.b7d1f2cf.js",
-    "static/media/Image-header.jpg": "/TODO-LIST.git/build/static/media/Image-header.812784db718f29c22c68.jpg",
-    "index.html": "/TODO-LIST.git/build/index.html",
-    "main.a09c9d7f.css.map": "/TODO-LIST.git/build/static/css/main.a09c9d7f.css.map",
-    "main.b7d1f2cf.js.map": "/TODO-LIST.git/build/static/js/main.b7d1f2cf.js.map"
+    "main.css": "/todo/static/css/main.a6f01401.css",
+    "main.js": "/todo/static/js/main.b7d1f2cf.js",
+    "static/media/Image-header.jpg": "/todo/static/media/Image-header.812784db718f29c22c68.jpg",
+    "index.html": "/todo/index.html",
+    "main.a6f01401.css.map": "/todo/static/css/main.a6f01401.css.map",
+    "main.b7d1f2cf.js.map": "/todo/static/js/main.b7d1f2cf.js.map"
   },
   "entrypoints": [
-    "static/css/main.a09c9d7f.css",
+    "static/css/main.a6f01401.css",
     "static/js/main.b7d1f2cf.js"
   ]
 }
