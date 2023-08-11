@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import './style.css';
 
 function App() {
   const [countries, setCountries] = useState([]);
@@ -40,7 +40,7 @@ function App() {
       </header>
       <div className="country-list" onScroll={handleScroll}>
         {countries.map((country, index) => (
-          <div key={index} className="country-item">
+          <div key={index} className="country-item" style={{ animationDelay: `${index * 0.1}s` }}>
             {country.name.common}
           </div>
         ))}
